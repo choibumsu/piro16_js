@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>인스타그램</title>
+
+    <link href="{% static 'styles/index.css' %}" rel="stylesheet"/>
+    <script src="{% static 'javascripts/index.js' %}" type="module"></script>
+</head>
+<body>
+<div id="app">
+    <section class="head row space-between">
+        <div class="row">
+            <img alt="profile" class="profile-img" src="{{ profile }}"/>
+            <div class="profile-name">{{ name }}</div>
+        </div>
+        <button class="more-menu-btn">···</button>
+    </section>
+    <section class="image">
+        <ul class="image-container row align-start">
+            {% for content_image in content_images %}
+                <li class="content-img"
+                    data-index="{{ forloop.counter0 }}"
+                    style="background-image: url('{{ content_image }}');"
+                ></li>
+            {% endfor %}
+        </ul>
+    </section>
+    <section class="bottom">
+        <div class="content row">
+            <span class="name">{{ name }}</span>
+            <span class="content">{{ content }}</span>
+        </div>
+        <ul class="comment">
+            {% for comment in comments %}
+                <li class="comment row" data-id="{{ comment.id }}">
+                    <span class="comment-user">{{ comment.user }}</span>
+                    <span class="comment-text">{{ comment.text }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+        <button class="more-comments-btn">댓글 더보기</button>
+    </section>
+    <section class="input row">
+        <input id="comment-input" placeholder="댓글 달기..." type="text"/>
+        <button class="comment-submit-btn">게시</button>
+    </section>
+</div>
+
+<script>
+  window.csrfToken = '{{ csrf_token }}'
+  window.user = '{{ user }}'
+
+  window.urls = {
+    getCommentsApi: '{% url "app:get_comments_api" %}',
+    postCommentApi: '{% url "app:post_comment_api" %}',
+  }
+</script>
+</body>
+</html>
+
