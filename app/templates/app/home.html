@@ -9,7 +9,10 @@
     <title>인스타그램</title>
 
     <link href="{% static 'styles/index.css' %}" rel="stylesheet"/>
-    <script src="{% static 'javascripts/index.js' %}" type="module"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="{% static 'javascripts/vue.js' %}" type="module"></script>
+    {#    <script src="{% static 'javascripts/index.js' %}" type="module"></script>#}
 </head>
 <body>
 <div id="app">
@@ -21,13 +24,12 @@
         <button class="more-menu-btn">···</button>
     </section>
     <section class="image">
-        <ul class="image-container row align-start">
-            {% for content_image in content_images %}
-                <li class="content-img"
-                    data-index="{{ forloop.counter0 }}"
-                    style="background-image: url('{{ content_image }}');"
-                ></li>
-            {% endfor %}
+        <ul class="image-container row align-start" :style="imageContainerStyle">
+            <li v-for="(contentImage, index) in contentImages" :key="contentImage"
+                class="content-img"
+                :style="{backgroundImage: 'url(' + contentImage + ')'}"
+                @click="swipeImage($event, index)"
+            ></li>
         </ul>
     </section>
     <section class="bottom">
@@ -36,24 +38,30 @@
             <span class="content">{{ content }}</span>
         </div>
         <ul class="comment">
-            {% for comment in comments %}
-                <li class="comment row" data-id="{{ comment.id }}">
-                    <span class="comment-user">{{ comment.user }}</span>
-                    <span class="comment-text">{{ comment.text }}</span>
-                </li>
-            {% endfor %}
+            <li v-for="comment in comments" class="comment row" :key="comment.id">
+                <span class="comment-user">[[ comment.user ]]</span>
+                <span class="comment-text">[[ comment.text ]]</span>
+            </li>
         </ul>
-        <button class="more-comments-btn">댓글 더보기</button>
+        <button v-show="isShowMoreBtn" class="more-comments-btn" @click="getComments()">댓글 더보기</button>
     </section>
     <section class="input row">
-        <input id="comment-input" placeholder="댓글 달기..." type="text"/>
-        <button class="comment-submit-btn">게시</button>
+        <input id="comment-input" placeholder="댓글 달기..." type="text" :value="comment"
+               @input="validateComment($event)" @keydown.enter="submitComment($event)"/>
+        <button class="comment-submit-btn" :class="{'active': isValidateComment}" @click="submitComment($event)">
+            게시
+        </button>
     </section>
 </div>
 
 <script>
   window.csrfToken = '{{ csrf_token }}'
   window.user = '{{ user }}'
+
+  window.data = {
+    contentImages: JSON.parse('{{ content_images|escapejs }}'),
+    comments: JSON.parse('{{ comments|escapejs }}')
+  }
 
   window.urls = {
     getCommentsApi: '{% url "app:get_comments_api" %}',

@@ -1,7 +1,7 @@
 import json
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.templatetags.static import static
 from django.views.decorators.http import require_GET, require_POST
 
@@ -10,15 +10,15 @@ def home(request):
     context = {
         'name': 'bbamsu211',
         'profile': static('images/profile.jpeg'),
-        'content_images': [
+        'content_images': json.dumps([
             static('images/react.png'),
             static('images/vue.png'),
             static('images/svelte.png')
-        ],
+        ]),
         'content': '프론트엔드 프레임워크 추천해주세요!',
         'like': 100,
         'is_like': False,
-        'comments': [
+        'comments': json.dumps([
             {
                 'id': 1,
                 'user': 'mmmaxkim',
@@ -34,7 +34,7 @@ def home(request):
                 'user': '_neulhan',
                 'text': '스벨트 써보실래요?'
             },
-        ]
+        ])
     }
     return render(request, 'app/home.html', context)
 
@@ -63,7 +63,7 @@ def get_comments_api(request):
         'comments': comments
     }
 
-    return HttpResponse(json.dumps(context), content_type='application/json')
+    return JsonResponse(context)
 
 
 def get_param(request, key, default_value=None):
@@ -78,7 +78,7 @@ def post_comment_api(request):
     print(comment, user)
 
     context = {
-        'id': 6
+        'id': 7
     }
 
-    return HttpResponse(json.dumps(context), content_type='application/json')
+    return JsonResponse(context)
