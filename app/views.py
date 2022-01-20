@@ -36,7 +36,7 @@ def home(request):
             },
         ])
     }
-    return render(request, 'app/home.html', context)
+    return render(request, 'app/home_vue.html', context)
 
 
 @require_GET
